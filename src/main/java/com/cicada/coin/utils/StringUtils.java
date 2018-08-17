@@ -1,6 +1,9 @@
 package com.cicada.coin.utils;
 
+import com.cicada.coin.model.Transaction;
+
 import java.security.*;
+import java.util.ArrayList;
 import java.util.Base64;
 
 public class StringUtils {
@@ -44,7 +47,7 @@ public class StringUtils {
         byte[] output = new byte[0];
 
         try {
-            dsaSignature = Signature.getInstance("ECDSA", "EC");
+            dsaSignature = Signature.getInstance("ECDSA", "BC");
             dsaSignature.initSign(privateKey);
             dsaSignature.update(input.getBytes("UTF-8"));
             output = dsaSignature.sign();
@@ -66,7 +69,7 @@ public class StringUtils {
      */
     public static Boolean verifyECDSASign(PublicKey publicKey, String data, byte[] signature) {
         try {
-            Signature ecdsaVerify = Signature.getInstance("ECDSA", "EC");
+            Signature ecdsaVerify = Signature.getInstance("ECDSA", "BC");
             ecdsaVerify.initVerify(publicKey);
             ecdsaVerify.update(data.getBytes("UTF-8"));
             return ecdsaVerify.verify(signature);
@@ -84,6 +87,34 @@ public class StringUtils {
      */
     public static String getStringFromPublicKey(PublicKey publicKey) {
         return Base64.getEncoder().encodeToString(publicKey.getEncoded());
+    }
+
+
+    /**
+     * get merkle root
+     *
+     * @param transactions
+     * @return
+     */
+    public static String getMerkleRoot(ArrayList<Transaction> transactions) {
+        int count = transactions.size();
+        ArrayList<String> previousLayer = new ArrayList<>();
+        for (Transaction transaction : transactions) {
+            previousLayer.add(transaction.getTransactionId());
+        }
+
+        ArrayList<String> treeLayer = previousLayer;
+        while (count > 1) {
+            treeLayer = new ArrayList<>();
+            for (int i = 1; i < previousLayer.size(); i++) {
+                treeLayer.add(applyHash256(previousLayer.get(i-1) + previousLayer.get(i)));
+            }
+
+            count = treeLayer.size();
+            previousLayer = treeLayer;
+        }
+
+        return (treeLayer.size() == 1) ? treeLayer.get(0) : "";
     }
 }
 

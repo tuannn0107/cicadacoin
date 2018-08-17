@@ -1,16 +1,20 @@
 package com.cicada.coin.model;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.Serializable;
 import java.security.PublicKey;
 
-public class TransactionOutputs implements Serializable {
+public class TransactionOutput implements Serializable {
+    private static Logger log = LoggerFactory.getLogger(TransactionOutput.class);
     private String transactionId;
     private PublicKey receipient;
     private float value;
     private String parentTransactionId;
 
 
-    public TransactionOutputs(PublicKey receipient, float value, String parentTransactionId) {
+    public TransactionOutput(PublicKey receipient, float value, String parentTransactionId) {
         this.receipient = receipient;
         this.value = value;
         this.parentTransactionId = parentTransactionId;
