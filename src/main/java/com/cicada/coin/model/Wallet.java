@@ -8,12 +8,18 @@ import java.io.Serializable;
 import java.security.*;
 import java.security.spec.ECGenParameterSpec;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
 
 public class Wallet implements Serializable {
     private static Logger log = LoggerFactory.getLogger(Wallet.class);
     private PrivateKey privateKey;
     private PublicKey publicKey;
+
+    public HashMap<String,TransactionOutput> UTXOs = new HashMap<String,TransactionOutput>();
+
+
+
 
 
     public Wallet() {
@@ -52,9 +58,10 @@ public class Wallet implements Serializable {
     public float getBalance() {
         float total = 0;
         for (Map.Entry<String, TransactionOutput> item: CicadaChain.UTXOs.entrySet()) {
-            if (item.getValue().isMine(this.publicKey)) {
-                CicadaChain.UTXOs.put(item.getValue().getTransactionId(), item.getValue());
-                total += item.getValue().getValue();
+            TransactionOutput UTXO = item.getValue();
+            if (UTXO.isMine(this.publicKey)) {
+                getUTXOs().put(UTXO.getTransactionId(), UTXO);
+                total += UTXO.getValue();
             }
         }
 
@@ -71,7 +78,7 @@ public class Wallet implements Serializable {
         //Create list transaction input
         ArrayList<TransactionInput> inputs = new ArrayList<>();
         float total = 0;
-        for (Map.Entry<String, TransactionOutput> txOutput: CicadaChain.UTXOs.entrySet()) {
+        for (Map.Entry<String, TransactionOutput> txOutput: getUTXOs().entrySet()) {
             total += txOutput.getValue().getValue();
             inputs.add(new TransactionInput(txOutput.getValue().getTransactionId()));
             if (total > value) {
@@ -83,7 +90,7 @@ public class Wallet implements Serializable {
         transaction.generateSignature(privateKey);
 
         for (TransactionInput txInput: inputs) {
-            CicadaChain.UTXOs.remove(txInput.getTransactionOutputId());
+            getUTXOs().remove(txInput.getTransactionOutputId());
         }
 
         return transaction;
@@ -104,5 +111,13 @@ public class Wallet implements Serializable {
 
     public void setPublicKey(PublicKey publicKey) {
         this.publicKey = publicKey;
+    }
+
+    public HashMap<String, TransactionOutput> getUTXOs() {
+        return UTXOs;
+    }
+
+    public void setUTXOs(HashMap<String, TransactionOutput> UTXOs) {
+        this.UTXOs = UTXOs;
     }
 }

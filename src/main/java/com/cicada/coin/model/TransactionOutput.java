@@ -1,5 +1,6 @@
 package com.cicada.coin.model;
 
+import com.cicada.coin.utils.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -18,6 +19,7 @@ public class TransactionOutput implements Serializable {
         this.receipient = receipient;
         this.value = value;
         this.parentTransactionId = parentTransactionId;
+        this.transactionId = StringUtils.applyHash256(StringUtils.getStringFromPublicKey(getReceipient()) + Float.toString(value) + getParentTransactionId());
     }
 
 

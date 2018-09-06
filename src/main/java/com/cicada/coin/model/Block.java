@@ -13,18 +13,16 @@ public class Block implements Serializable {
     private static Logger log = LoggerFactory.getLogger(Block.class);
     private String previousHash;
     private String currentHash;
-    private String data;
     private String merkleRoot;
     private int nonce;
     private long timestamp;
 
-    private ArrayList<Transaction> transactions;
+    private ArrayList<Transaction> transactions = new ArrayList<>();
 
     public Block(String previousHash) {
         this.previousHash = previousHash;
         this.timestamp = new Date().getTime();
         this.currentHash = calculateHash();
-        this.transactions = new ArrayList<>();
     }
 
 
@@ -47,7 +45,7 @@ public class Block implements Serializable {
     public void mineBlock(int difficult) {
         log.info("Start mining block with difficulty is " + difficult + " and " + this.transactions.size() + " transaction.");
         this.merkleRoot = StringUtils.getMerkleRoot(transactions);
-        String target = new String(new char[difficult]).replace("\0", "0");
+        String target = new String(new char[difficult]).replace('\0', '0');
         while(!hash().substring(0, difficult).equals(target))
         {
             nonce++;

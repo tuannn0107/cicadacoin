@@ -62,6 +62,7 @@ public class CicadaChain {
         genesisTransaction.setTransactionId(Constants.GENESIS_BLOCK_TXID);
         genesisTransaction.getOutputs().add(new TransactionOutput(genesisTransaction.getReceipient(), genesisTransaction.getValue(), genesisTransaction.getTransactionId()));
         UTXOs.put(genesisTransaction.getOutputs().get(0).getTransactionId(), genesisTransaction.getOutputs().get(0));
+        log.info("--------------------------------------------------");
 
         log.info("Mining genesis block.");
         Block genesisBlock = new Block(Constants.GENESIS_BLOCK_HASH);
@@ -70,13 +71,30 @@ public class CicadaChain {
         log.info("Coinbase's wallet :" + coinbase.getBalance());
         log.info("Bob's wallet :" + bobWallet.getBalance());
         log.info("Alice's wallet :" + aliceWallet.getBalance());
+        log.info("--------------------------------------------------");
 
         log.info("Start send funds 40 coins from Bob to Alice");
         Block block1 = new Block(genesisBlock.hash());
         block1.addTransaction(bobWallet.sendFunds(aliceWallet.getPublicKey(), 40f));
+        log.info("Bob's wallet :" + bobWallet.getBalance());
+        log.info("Alice's wallet :" + aliceWallet.getBalance());
+        log.info("-------------");
+        log.info("Start send funds 15 coins from Bob to Alice");
+        block1.addTransaction(bobWallet.sendFunds(aliceWallet.getPublicKey(), 15f));
+        log.info("Bob's wallet :" + bobWallet.getBalance());
+        log.info("Alice's wallet :" + aliceWallet.getBalance());
+        log.info("-------------");
+        log.info("Start send funds 25 coins from Bob to Bob");
+        block1.addTransaction(bobWallet.sendFunds(bobWallet.getPublicKey(), 125f));
+        log.info("Bob's wallet :" + bobWallet.getBalance());
+        log.info("Alice's wallet :" + aliceWallet.getBalance());
+        log.info("-------------");
+        log.info("Start send funds 25 coins from Alice to Bob");
+        block1.addTransaction(aliceWallet.sendFunds(bobWallet.getPublicKey(), 25f));
         addBlock(block1);
         log.info("Bob's wallet :" + bobWallet.getBalance());
         log.info("Alice's wallet :" + aliceWallet.getBalance());
+        log.info("--------------------------------------------------");
 
         log.info("Try to send funds out of balance.");
         Block block2 = new Block(block1.hash());
@@ -84,12 +102,14 @@ public class CicadaChain {
         addBlock(block2);
         log.info("Bob's wallet :" + bobWallet.getBalance());
         log.info("Alice's wallet :" + aliceWallet.getBalance());
+        log.info("--------------------------------------------------");
 
         Block block3 = new Block(block2.hash());
         block3.addTransaction(aliceWallet.sendFunds(bobWallet.getPublicKey(), 20f));
         addBlock(block3);
         log.info("Bob's wallet :" + bobWallet.getBalance());
         log.info("Alice's wallet :" + aliceWallet.getBalance());
+        log.info("--------------------------------------------------");
     }
 
 

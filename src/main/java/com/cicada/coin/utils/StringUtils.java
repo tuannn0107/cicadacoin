@@ -106,7 +106,7 @@ public class StringUtils {
         ArrayList<String> treeLayer = previousLayer;
         while (count > 1) {
             treeLayer = new ArrayList<>();
-            for (int i = 1; i < previousLayer.size(); i++) {
+            for (int i = 1; i < previousLayer.size(); i += 2) {
                 treeLayer.add(applyHash256(previousLayer.get(i-1) + previousLayer.get(i)));
             }
 

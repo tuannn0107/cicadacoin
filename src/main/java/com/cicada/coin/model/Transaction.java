@@ -19,15 +19,14 @@ public class Transaction {
 
     private static int sequence = 0;
 
-    private ArrayList<TransactionInput> inputs;
-    private ArrayList<TransactionOutput> outputs;
+    private ArrayList<TransactionInput> inputs = new ArrayList<>();
+    private ArrayList<TransactionOutput> outputs = new ArrayList<>();
 
     public Transaction(PublicKey from, PublicKey to, float value, ArrayList<TransactionInput> inputs) {
         this.sender = from;
         this.receipient = to;
         this.value = value;
         this.inputs = inputs;
-        this.outputs = new ArrayList<>();
     }
 
 
@@ -91,7 +90,10 @@ public class Transaction {
 
         //Remove transaction input from chain as spent
         for (TransactionInput txInput: inputs) {
-            CicadaChain.UTXOs.remove(txInput.getTransactionOutputId());
+            if(txInput.getUTXO() != null)
+            {
+                CicadaChain.UTXOs.remove(txInput.getUTXO().getTransactionId());
+            }
         }
 
         return true;
@@ -102,9 +104,10 @@ public class Transaction {
         float total = 0;
         for (TransactionInput txInput: inputs) {
             if (txInput.getUTXO() != null) {
-                total++;
+                total += txInput.getUTXO().getValue();
             }
         }
+
         return total;
     }
 
